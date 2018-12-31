@@ -43,6 +43,7 @@ header icmp_t {
 }
 
 struct metadata {
+    bit<1>  passThrough;
     bit<1>  fake;
     bit<8>  originalProtocol;
     bit<8>  icmpFakeCode;
@@ -60,6 +61,7 @@ parser parse(packet_in packet,
                 inout metadata meta,
                 inout standard_metadata_t standard_metadata) {
     state start {
+        meta.passThrough = 0;
         meta.fake = 0;
         transition parse_ethernet;
     }
@@ -67,9 +69,15 @@ parser parse(packet_in packet,
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
+            TYPE_ARP: parse_arp;
             TYPE_IPV4: parse_ipv4;
             default: accept;
         }
+    }
+
+    state parse_arp {
+        meta.passThrough = 1;
+        transition accept;
     }
 
     state parse_ipv4 {
@@ -171,6 +179,7 @@ control ingress(inout headers hdr,
 
     table cap {
         key = {
+            meta.passThrough: exact;
             meta.fake: exact;
         }
         actions = {
@@ -179,8 +188,8 @@ control ingress(inout headers hdr,
             NoAction;
         }
         const entries = {
-            0: encap();
-            1: decap();
+            {0, 0}: encap();
+            {0, 1}: decap();
         }
         default_action = NoAction();
     }

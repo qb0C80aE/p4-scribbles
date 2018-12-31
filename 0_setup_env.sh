@@ -61,11 +61,6 @@ sudo ip netns exec fw ip addr add 10.0.0.254/24 dev v22
 sudo ip netns exec fw ip addr add 10.0.1.254/24 dev v31
 sudo ip netns exec host2 ip addr add 10.0.1.1/24 dev v42
 
-sudo ip netns exec host1 arp -s 10.0.0.254 10:54:ff:99:02:02
-sudo ip netns exec fw arp -s 10.0.0.1 10:54:ff:99:01:01
-sudo ip netns exec fw arp -s 10.0.1.1 10:54:ff:99:04:02
-sudo ip netns exec host2 arp -s 10.0.1.254 10:54:ff:99:03:01
-
 sudo ip netns exec host1 ip route add 10.0.1.0/24 via 10.0.0.254                         
 sudo ip netns exec host2 ip route add 10.0.0.0/24 via 10.0.1.254
 sudo ip netns exec fw bash -c "echo 1 | tee /proc/sys/net/ipv4/ip_forward"
