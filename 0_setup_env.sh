@@ -11,6 +11,11 @@ sudo ip netns add host1
 sudo ip netns add host2
 sudo ip netns add fw
 
+sudo ip netns exec fw iptables -A FORWARD -p tcp -j REJECT
+sudo ip netns exec fw iptables -A FORWARD -p udp -j REJECT
+sudo ip netns exec fw iptables -A FORWARD -p icmp -j ACCEPT
+sudo ip netns exec fw iptables -A FORWARD -j REJECT
+
 sudo ip link add v11 type veth peer name v12 # host1-term1
 sudo ip link add v21 type veth peer name v22 # term1-fw
 sudo ip link add v31 type veth peer name v32 # fw-term2
@@ -24,6 +29,15 @@ sudo ip link set dev v31 addr 10:54:ff:99:03:01
 sudo ip link set dev v32 addr 10:54:ff:99:03:02
 sudo ip link set dev v41 addr 10:54:ff:99:04:01
 sudo ip link set dev v42 addr 10:54:ff:99:04:02
+
+sudo ethtool --offload v11 rx off tx off
+sudo ethtool --offload v12 rx off tx off
+sudo ethtool --offload v21 rx off tx off
+sudo ethtool --offload v22 rx off tx off
+sudo ethtool --offload v31 rx off tx off
+sudo ethtool --offload v32 rx off tx off
+sudo ethtool --offload v41 rx off tx off
+sudo ethtool --offload v42 rx off tx off
 
 sudo ip link set v11 netns host1
 sudo ip link set v22 netns fw
