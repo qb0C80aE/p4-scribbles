@@ -39,6 +39,9 @@ sudo ethtool --offload v32 rx off tx off
 sudo ethtool --offload v41 rx off tx off
 sudo ethtool --offload v42 rx off tx off
 
+sudo ip link set v11 mtu 1480 # default - fake icmp(20)
+sudo ip link set v42 mtu 1480 # default - fake icmp(20)
+
 sudo ip link set v11 netns host1
 sudo ip link set v22 netns fw
 sudo ip link set v31 netns fw
