@@ -16,6 +16,8 @@ sudo ip netns del h2 >/dev/null 2>&1
 sudo ip netns del h3 >/dev/null 2>&1
 sudo killall simple_switch
 
+p4c basic.p4
+
 sudo ip netns add h1
 sudo ip netns add h2
 sudo ip netns add h3
