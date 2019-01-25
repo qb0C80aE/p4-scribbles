@@ -95,9 +95,9 @@ sudo ip netns exec h1 ip route add default via 10.0.1.254
 sudo ip netns exec h2 ip route add default via 10.0.2.254
 sudo ip netns exec h3 ip route add default via 10.0.3.254
 
-sudo simple_switch basic.json -i1@s1-eth1 -i2@s1-eth2 -i3@s1-eth3 --nanolog ipc:///tmp/bm-0-log.ipc --device-id 0 --log-console --thrift-port 9090 &
-sudo simple_switch basic.json -i1@s2-eth1 -i2@s2-eth2 -i3@s2-eth3 --nanolog ipc:///tmp/bm-1-log.ipc --device-id 1 --log-console --thrift-port 9091 &
-sudo simple_switch basic.json -i1@s3-eth1 -i2@s3-eth2 -i3@s3-eth3 --nanolog ipc:///tmp/bm-2-log.ipc --device-id 2 --log-console --thrift-port 9092 &
+sudo simple_switch basic.json -i1@s1-eth1 -i2@s1-eth2 -i3@s1-eth3 --device-id 0 --log-console --thrift-port 9090 &
+sudo simple_switch basic.json -i1@s2-eth1 -i2@s2-eth2 -i3@s2-eth3 --device-id 1 --log-console --thrift-port 9091 &
+sudo simple_switch basic.json -i1@s3-eth1 -i2@s3-eth2 -i3@s3-eth3 --device-id 2 --log-console --thrift-port 9092 &
 
 sleep 5
 
