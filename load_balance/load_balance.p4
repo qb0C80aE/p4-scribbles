@@ -61,6 +61,7 @@ parser MyParser(packet_in packet,
                 inout standard_metadata_t standard_metadata) {
     
     state start {
+        meta.ecmp_select = 0x3FFF;
         transition parse_ethernet;
     }
     state parse_ethernet {
@@ -118,6 +119,12 @@ control MyIngress(inout headers hdr,
         standard_metadata.egress_spec = port;
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
+    action ipv4_forward(bit<48> dstAddr,  bit<9> port) {
+        standard_metadata.egress_spec = port;
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+        hdr.ethernet.dstAddr = dstAddr;
+        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+    }
     table ecmp_group {
         key = {
             hdr.ipv4.dstAddr: lpm;
@@ -125,7 +132,9 @@ control MyIngress(inout headers hdr,
         actions = {
             drop;
             set_ecmp_select;
+            NoAction;
         }
+        default_action = NoAction();
         size = 1024;
     }
     table ecmp_nhop {
@@ -135,13 +144,28 @@ control MyIngress(inout headers hdr,
         actions = {
             drop;
             set_nhop;
+            NoAction;
         }
+        default_action = NoAction();
         size = 2;
+    }
+    table ipv4_lpm {
+        key = {
+            hdr.ipv4.dstAddr: lpm;
+        }
+        actions = {
+            ipv4_forward;
+            drop;
+            NoAction;
+        }
+        default_action = NoAction();
+        size = 1024;
     }
     apply {
         if (hdr.ipv4.isValid() && hdr.ipv4.ttl > 0) {
             ecmp_group.apply();
             ecmp_nhop.apply();
+            ipv4_lpm.apply();
         }
     }
 }
